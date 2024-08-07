@@ -16,8 +16,6 @@ for kkk = 1:1
         KEtoE=20;
         KEtoI=20; KItoE=20; KItoI=20;
 
-        TTT=T_persistent(ppp-1,:);
-
         parfor jjj = 1:Naver
             rng(jjj+1000);
             [matrixR] = func_WS_network(NR_node,KEtoE,KEtoI,KItoE,KItoI);
@@ -26,20 +24,18 @@ for kkk = 1:1
             [matrixRtoS] = func_RtoS(NR_node,NS_node,0.05);
             [matrixStoR] = func_StoR(NS_node,NR_node,0.2);
             
-            if (TTT(jjj)<4000)
-                [time,outputS(jjj),outputR(jjj),Nt(jjj),break_time(jjj),sum_Energy_ions(jjj),time_fir_R(jjj),n_fir_R(jjj),time_fir_S(jjj),n_fir_S(jjj)] = ...
-                trial_R(gPoisson,NS_node,NR_node,step,gRtoS,gAMPA_R,gNMDA_R(ppp),gGABA_R,gStoR,matrixS,matrixR,matrixRtoS,matrixStoR);
-                
-                T_persistent(ppp,jjj) = break_time(jjj);
-                mean_Energy(ppp,jjj) = sum_Energy_ions(jjj);
-                matrix_rec_R(kkk,ppp,jjj,:,:)=matrixR;
-                matrix_rec_S(kkk,ppp,jjj,:,:)=matrixS;
-                matrix_rec_RtoS(kkk,ppp,jjj,:,:)=matrixRtoS;
-                matrix_rec_StoR(kkk,ppp,jjj,:,:)=matrixStoR;                
-            else
-                T_persistent(ppp,jjj) = 4000;            
-            end
-            fprintf('ppp %d/%d jjj %d/%d 持续时间= %f\n',ppp,Np,jjj,Naver,T_persistent(ppp,jjj));
+            
+            [time,outputS(jjj),outputR(jjj),Nt(jjj),break_time(jjj),sum_Energy_ions(jjj),time_fir_R(jjj),n_fir_R(jjj),time_fir_S(jjj),n_fir_S(jjj)] = ...
+            trial_R(gPoisson,NS_node,NR_node,step,gRtoS,gAMPA_R,gNMDA_R(ppp),gGABA_R,gStoR,matrixS,matrixR,matrixRtoS,matrixStoR);
+            
+            T_persistent(ppp,jjj) = break_time(jjj);
+            mean_Energy(ppp,jjj) = sum_Energy_ions(jjj);
+            matrix_rec_R(kkk,ppp,jjj,:,:)=matrixR;
+            matrix_rec_S(kkk,ppp,jjj,:,:)=matrixS;
+            matrix_rec_RtoS(kkk,ppp,jjj,:,:)=matrixRtoS;
+            matrix_rec_StoR(kkk,ppp,jjj,:,:)=matrixStoR;                
+            
+            fprintf('ppp %d/%d jjj %d/%d Duration= %f\n',ppp,Np,jjj,Naver,T_persistent(ppp,jjj));
         end
 
         mean_T_persistent=sum(T_persistent)/Naver;
@@ -49,10 +45,6 @@ for kkk = 1:1
 end
 save Duration-NMDA=0.1-0.14_AMPA=0.11_GABA=0.47.mat
 %%
-% gNMDA_R=0.001:gstep:0.001+gstep*40; nnn=length(gNMDA_R);
-
-% T_persistent(end:80,:)=4000; 
-% T_persistent(:,[31,44])=[]; T_persistent(:,[3,10,13,23])=[];
 
 meanT=mean(T_persistent,2); errorT=std(T_persistent');
 %%
